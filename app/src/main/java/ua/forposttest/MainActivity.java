@@ -7,31 +7,38 @@ import android.os.Bundle;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String FIREBASE_STORAGE = "test-452f8.appspot.com";
     private MapView mapView;
     private DatabaseReference mDatabase;
+    private List<Fighter> fighters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Mapbox.getInstance(this, getString(R.string.access_token));
-        mapView = (MapView) findViewById(R.id.mapView);
+        mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
-        test();
     }
 
     @Override
@@ -44,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        test();
     }
 
     @Override
@@ -81,8 +89,10 @@ public class MainActivity extends AppCompatActivity {
         mDatabase.child("fighters").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                Fighter fighter = dataSnapshot.getValue(Fighter.class);
+                GenericTypeIndicator<List<Fighter>> indicator = new GenericTypeIndicator<List<Fighter>>() {
+                };
+                fighters = dataSnapshot.getValue(indicator);
+                addMarkers();
             }
 
             @Override
@@ -90,6 +100,43 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://test-452f8.appspot.com"); //.child(photoName);
+    }
+
+    private List<Marker> markers;
+
+    private void addMarkers() {
+
+
+        for (Fighter fighter : fighters) {
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(MapboxMap mapboxMap) {
+                    boolean sign = true;
+                    markers = mapboxMap.getMarkers();
+                    for (Marker m : markers) {
+                        if (Integer.parseInt(m.getTitle()) == fighter.id) {
+                            sign = false;
+                            break;
+                        }
+                    }
+
+                    if (sign) {
+                        mapboxMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(fighter.position_lat, fighter.position_lon))
+                                .title(String.valueOf(fighter.id))
+                                .snippet(fighter.team)
+
+                        );
+                    } else {
+                        for (Marker m : markers) {
+                            if (Integer.parseInt(m.getTitle()) == fighter.id) {
+                                m.setPosition(new LatLng(fighter.position_lat, fighter.position_lon));
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }

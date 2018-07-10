@@ -1,12 +1,14 @@
 package ua.forposttest;
 
-public class Fighter {
-    private int id;
-    private float position_lon;
-    private float position_lat;
-    private int health;
-    private int type;
-    private String team;
-    private int clips;
-    private int ammo;
+import java.io.Serializable;
+
+public class Fighter implements Serializable {
+    public int id;
+    public float position_lon;
+    public float position_lat;
+    public int health;
+    public int type;
+    public String team;
+    public int clips;
+    public int ammo;
 }
