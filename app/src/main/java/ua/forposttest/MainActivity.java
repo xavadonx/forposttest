@@ -52,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mapView.onResume();
         test();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.am_fragment, fragment, key)
+                .commit();
     }
 
     @Override
