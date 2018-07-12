@@ -2,8 +2,10 @@ package ua.forposttest;
 
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,8 +32,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 //    private MapView mapView;
-//    private DatabaseReference mDatabase;
-//    private List<Fighter> fighters;
+public static List<Fighter> fighters;
+
+    private DatabaseReference mDatabase;
+//    private DataFighters dataFighters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,69 +43,64 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         showFragments();
+        getDataFromFB();
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        mapView.onStart();
-//    }
-//
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        mapView.onResume();
-////        test();
-//        showFragments();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        mapView.onPause();
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        mapView.onStop();
-//    }
-//
-//    @Override
-//    public void onLowMemory() {
-//        super.onLowMemory();
-//        mapView.onLowMemory();
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        mapView.onDestroy();
-//    }
-//
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        mapView.onSaveInstanceState(outState);
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    private void getDataFromFB() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("fighters").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<List<Fighter>> indicator = new GenericTypeIndicator<List<Fighter>>() {
+                };
+                fighters = dataSnapshot.getValue(indicator);
+//                dataFighters.addMarkers();
+
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_top);
+                if (fragment != null && fragment instanceof MapFragment) {
+                    ((MapFragment) fragment).addMarkers();
+                } else {
+                    showFragments();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+//    public interface DataFighters {
+//        void addMarkers();
 //    }
 
     private void showFragments() {
-//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, MapFragment.newInstance())
-                .commit();
-//        } else {
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.land_container, ContactListFragment.newInstance(contacts))
-//                    .commit();
-//
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.land_det, ContactDetFragment.newInstance(contacts.get(0)))
-//                    .commit();
-//        }
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_top, MapFragment.newInstance())
+                    .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_bottom, ChronologyFragment.newInstance())
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_left, MapFragment.newInstance())
+                    .commit();
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container_right, ChronologyFragment.newInstance())
+                    .commit();
+        }
     }
 
 //    private void test() {

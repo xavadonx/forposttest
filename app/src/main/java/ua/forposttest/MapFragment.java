@@ -25,12 +25,12 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import java.util.List;
 import java.util.Objects;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment { // implements MainActivity.DataFighters {
 
     private MapView mapView;
     private DatabaseReference mDatabase;
     private List<Marker> markers;
-    private List<Fighter> fighters;
+//    private List<Fighter> fighters;
 
     public static MapFragment newInstance() {
         return new MapFragment();
@@ -58,7 +58,7 @@ public class MapFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        getDataFromFB();
+//        getDataFromFB();
     }
 
     @Override
@@ -85,32 +85,33 @@ public class MapFragment extends Fragment {
         mapView.onDestroy();
     }
 
-    private void getDataFromFB() {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("fighters").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<List<Fighter>> indicator = new GenericTypeIndicator<List<Fighter>>() {
-                };
-                fighters = dataSnapshot.getValue(indicator);
-                addMarkers();
-            }
+//    private void getDataFromFB() {
+//        mDatabase = FirebaseDatabase.getInstance().getReference();
+//        mDatabase.child("fighters").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                GenericTypeIndicator<List<Fighter>> indicator = new GenericTypeIndicator<List<Fighter>>() {
+//                };
+//                MainActivity.fighters = dataSnapshot.getValue(indicator);
+//                addMarkers();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void addMarkers() {
+    //    @Override
+    public void addMarkers() {
 //        for (Fighter fighter : fighters) {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
                 markers = mapboxMap.getMarkers();
 
-                for (Fighter fighter : fighters) {
+                for (Fighter fighter : MainActivity.fighters) {
                     boolean sign = true;
                     for (Marker m : markers) {
                         if (Integer.parseInt(m.getTitle()) == fighter.id) {
