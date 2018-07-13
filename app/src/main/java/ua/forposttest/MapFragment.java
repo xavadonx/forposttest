@@ -1,9 +1,11 @@
 package ua.forposttest;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ public class MapFragment extends Fragment {
     private DatabaseReference mDatabase;
     private List<Marker> markers;
     private CameraPosition position;
+    private MapboxMap mapboxMap;
 
     public static MapFragment newInstance() {
         return new MapFragment();
@@ -60,10 +63,41 @@ public class MapFragment extends Fragment {
             addMarkers();
     }
 
+    private void getDialog() {
+        mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                for (Fighter fighter : fighters) {
+                    if (Integer.parseInt(marker.getTitle()) == fighter.id) {
+                        String message = "health " + fighter.health + "\n" +
+                                "type " + fighter.type + "\n" +
+                                "clips " + fighter.clips + "\n" +
+                                "ammo " + fighter.ammo;
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setMessage(message)
+                                .setTitle("team " + fighter.team);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                        return false;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
     public void addMarkers() {
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
+                MapFragment.this.mapboxMap = mapboxMap;
+                getDialog();
                 markers = mapboxMap.getMarkers();
 
                 if (fighters != null) {
@@ -83,7 +117,6 @@ public class MapFragment extends Fragment {
                             mapboxMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(fighter.position_lat, fighter.position_lon))
                                     .title(String.valueOf(fighter.id))
-                                    .snippet(fighter.team)
                             );
                         }
                     }

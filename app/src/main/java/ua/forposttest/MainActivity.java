@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         getDataFromFB();
 
-        startPlay();
+//        startPlay();
     }
 
     @Override
@@ -140,15 +140,24 @@ public class MainActivity extends AppCompatActivity {
         mDatabase.child("fighters").removeEventListener(eventListener);
         getRec();
 
+        Object lock = new Object();
+
         for (FighterRec fighterRec : fightRecord) {
             fighters = fighterRec.getFighters();
 
-            mTimer = new Timer();
-            mMyTimerTask = new MyTimerTask();
+            synchronized (lock) {
+                try {
+                    lock.wait(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-            mTimer.schedule(mMyTimerTask, fighterRec.getTimeBetweenSteps());
-            mTimer.cancel();
-            mTimer = null;
+            checkFragments();
+//            mTimer = new Timer();
+//            mMyTimerTask = new MyTimerTask();
+//
+//            mTimer.schedule(mMyTimerTask, 500); // fighterRec.getTimeBetweenSteps());
         }
     }
 
@@ -182,7 +191,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            runOnUiThread(() -> checkFragments());
+            runOnUiThread(() -> {
+                checkFragments();
+            });
         }
     }
 }
