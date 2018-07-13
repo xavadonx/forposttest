@@ -9,16 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import java.util.List;
+import static ua.forposttest.MainActivity.fighters;
 
 public class ChronologyFragment extends Fragment {
 
-    //    private static List<Fighter> fighters;
     private ListView fightersList;
     private FighterAdapter adapter;
 
     public static ChronologyFragment newInstance() {
-//        fighters = list;
         return new ChronologyFragment();
     }
 
@@ -28,17 +26,19 @@ public class ChronologyFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_chronology, container, false);
         fightersList = root.findViewById(R.id.fc_fighters_list);
 
-//        while (MainActivity.fighters == null) {
-//            try {
-//                wait(100);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-        adapter = new FighterAdapter(getContext(), MainActivity.fighters);
-        fightersList.setAdapter(adapter);
-
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initAdapter();
+    }
+
+    public void initAdapter() {
+        if (fighters == null) return;
+
+        adapter = new FighterAdapter(getContext(), fighters);
+        fightersList.setAdapter(adapter);
     }
 }

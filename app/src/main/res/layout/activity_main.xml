@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -17,26 +17,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" />
-
-    <!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_alignParentStart="true"-->
-    <!--android:layout_alignParentTop="true"-->
-    <!--android:text="Hello World!"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--<com.mapbox.mapboxsdk.maps.MapView-->
-    <!--android:id="@+id/mapView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--mapbox_cameraTargetLat="40.73581"-->
-    <!--mapbox_cameraTargetLng="-73.99155"-->
-    <!--mapbox_styleUrl="mapbox://styles/mapbox/streets-v10"-->
-    <!--mapbox_cameraZoom="11" />-->
-
 
 </LinearLayout>

@@ -11,10 +11,12 @@ import android.widget.TextView;
 import java.util.List;
 
 public class FighterAdapter extends ArrayAdapter<Fighter> {
+
     public FighterAdapter(@NonNull Context context, List<Fighter> fighters) {
         super(context, R.layout.list_item, fighters);
     }
 
+    @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -41,17 +43,14 @@ public class FighterAdapter extends ArrayAdapter<Fighter> {
         holder.health.setText(String.valueOf(getItem(position).health));
         holder.clips.setText(String.valueOf(getItem(position).clips));
         holder.ammo.setText(String.valueOf(getItem(position).ammo));
-//        holder.image.setImageDrawable(ContextCompat.getDrawable(getContext(), getItem(position).getImage()));
-//        holder.name.setText(getItem(position).getName());
-//        holder.email.setText(getItem(position).getEmail());
 
         return rowView;
     }
 
     private static class ViewHolder {
-        public TextView team;
-        public TextView health;
-        public TextView clips;
-        public TextView ammo;
+        TextView team;
+        TextView health;
+        TextView clips;
+        TextView ammo;
     }
 }
